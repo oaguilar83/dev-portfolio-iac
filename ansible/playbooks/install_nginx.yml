@@ -1,0 +1,40 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Update apt cache and install Nginx
+      apt:
+        name: nginx
+        state: latest
+        update_cache: yes
+
+    - name: Start and enable Nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Copy website files to the server's document root
+      copy:
+        src: ../files/index.html
+        dest: /var/www/oscaraguilardev/html/
+        mode: preserve
+
+    - name: Apply Nginx template
+      template:
+        src: ../files/nginx.conf.j2
+        dest: /etc/nginx/sites-available/oscaraguilardev
+      notify: Restart Nginx
+
+    - name: Enable new site
+      file:
+        src: /etc/nginx/sites-available/oscaraguilardev
+        dest: /etc/nginx/sites-enabled/oscaraguilardev
+        state: link
+      notify: Restart Nginx
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
