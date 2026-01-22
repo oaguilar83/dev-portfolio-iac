@@ -24,10 +24,22 @@ resource "aws_route53_zone" "public-zone" {
   name = "oscaraguilardev.com"
 }
 
+resource "aws_route53_record" "root_a_record" {
+  zone_id = aws_route53_zone.public-zone.zone_id
+  name    = "oscaraguilardev.com"
+  type    = "A"
+  ttl     = "300"
+  records = [aws_instance.web_server.public_ip]
+}
+
 resource "aws_route53_record" "www" {
   zone_id = aws_route53_zone.public-zone.zone_id
   name    = "www.oscaraguilardev.com"
   type    = "A"
-  ttl     = "300"
-  records = [aws_instance.web_server.public_ip]
+
+  alias {
+    name                   = aws_route53_record.root_a_record.name
+    zone_id                = aws_route53_record.root_a_record.zone_id
+    evaluate_target_health = false
+  }
 }

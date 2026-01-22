@@ -17,8 +17,3 @@ output "name_servers" {
   description = "The Route53 Zone Name Servers"
   value       = aws_route53_zone.public-zone.name_servers
 }
-
-output "records" {
-  description = "The records created in the Route53 zone"
-  value       = aws_route53_record.www
-}
