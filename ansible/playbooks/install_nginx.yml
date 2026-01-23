@@ -8,11 +8,24 @@
         state: latest
         update_cache: yes
 
+    - name: Install certbot
+      apt:
+        name: 
+          - certbot
+          - python3-certbot-nginx
+        state: present
+        update_cache: true
+
     - name: Start and enable Nginx service
       service:
         name: nginx
         state: started
         enabled: true
+
+    - name: Obtain TLS certificate with Certbot
+      command:
+        cmd: sudo certbot certonly --webroot -w /var/www/oscaraguilardev/html --non-interactive --agree-tos -d oscaraguilardev.com -d www.oscaraguilardev.com -m osc.aguilar83@gmail.com
+        creates: /etc/letsencrypt/live/oscaraguilardev.com
 
     - name: Copy website files to the server's document root
       copy:
@@ -24,17 +37,15 @@
       template:
         src: ../files/nginx.conf.j2
         dest: /etc/nginx/sites-available/oscaraguilardev
-      notify: Restart Nginx
 
     - name: Enable new site
       file:
         src: /etc/nginx/sites-available/oscaraguilardev
         dest: /etc/nginx/sites-enabled/oscaraguilardev
         state: link
-      notify: Restart Nginx
 
-  handlers:
     - name: Restart Nginx
       service:
         name: nginx
         state: restarted
+

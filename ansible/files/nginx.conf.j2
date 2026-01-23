@@ -11,3 +11,15 @@ server {
    try_files $uri.html $uri $uri/ =404;
   }
 }
+
+server {
+  listen 443 ssl;
+
+  root /var/www/oscaraguilardev/html;
+  index index.html;
+
+  server_name oscaraguilardev.com www.oscaraguilardev.com;
+
+  ssl_certificate /etc/letsencrypt/live/oscaraguilardev.com/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/oscaraguilardev.com/privkey.pem;
+}
