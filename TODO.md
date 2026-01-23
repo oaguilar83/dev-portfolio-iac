@@ -7,6 +7,8 @@
   - Generating key pair locally
   - Storing the public key in AWS
   - Referencing key in instance configuration
+- Update Ansible with roles
+- Removed hardcoded inputs
 
 ### In Progres...
 
