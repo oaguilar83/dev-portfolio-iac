@@ -1,3 +1,11 @@
+data "http" "local_ip" {
+  url = "https://ipv4.icanhazip.com"
+}
+
+locals {
+  my_public_cidr = "${chomp(data.http.local_ip.response_body)}/32"
+}
+
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -9,11 +17,52 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"]
 }
 
+resource "aws_security_group" "web_server_sg" {
+  name        = "web_server_sg"
+  description = "Security group for web server"
+
+  ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [local.my_public_cidr]
+  }
+
+  ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "web-server-sg"
+  }
+}
+
 resource "aws_instance" "web_server" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
 
-  key_name = var.key_name
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.web_server_sg.id]
 
   tags = {
     name = "WebServer"
