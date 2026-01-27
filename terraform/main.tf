@@ -6,6 +6,26 @@ locals {
   my_public_cidr = "${chomp(data.http.local_ip.response_body)}/32"
 }
 
+resource "tls_private_key" "ssh_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "generated_key" {
+  key_name   = var.key_name
+  public_key = tls_private_key.ssh_key.public_key_openssh
+
+  tags = {
+    Name = var.key_name
+  }
+}
+
+resource "local_file" "private_key" {
+  content         = tls_private_key.ssh_key.private_key_pem
+  filename        = "${path.module}/${var.key_name}.pem"
+  file_permission = "0600"
+}
+
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -61,11 +81,11 @@ resource "aws_instance" "web_server" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
 
-  key_name               = var.key_name
+  key_name               = aws_key_pair.generated_key.key_name
   vpc_security_group_ids = [aws_security_group.web_server_sg.id]
 
   tags = {
-    name = "WebServer"
+    name = "web-server"
   }
 }
 

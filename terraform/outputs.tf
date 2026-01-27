@@ -17,3 +17,13 @@ output "name_servers" {
   description = "The Route53 Zone Name Servers"
   value       = aws_route53_zone.public-zone.name_servers
 }
+
+output "private_key_path" {
+  description = "Path to the generated private key file"
+  value       = local_file.private_key.filename
+}
+
+output "ssh_command" {
+  description = "SSH command to connect to the instance"
+  value       = "ssh -i ${local_file.private_key.filename} ubuntu@${aws_instance.web_server.public_ip}"
+}
