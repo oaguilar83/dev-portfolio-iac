@@ -8,3 +8,4 @@ terraform/*.tfplan
 terraform/*.tfplan.binary
 
 *.tfvars
+*.pem

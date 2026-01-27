@@ -1,0 +1,33 @@
+---
+- name: Install TLS Cert
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Install Certbot
+      apt:
+        name:
+          - certbot
+          - python3-certbot-nginx
+        state: present
+        update_cache: true
+
+    - name: Obtain TLS certificate with Certbot
+      command:
+        cmd: sudo certbot certonly --webroot -w /var/www/oscaraguilardev/html --non-interactive --agree-tos -d oscaraguilardev.com -d www.oscaraguilardev.com -m osc.aguilar83@gmail.com
+        creates: /etc/letsencrypt/live/oscaraguilardev.com
+
+    - name: Apply Nginx template
+      template:
+        src: ../files/nginx.conf.tls.j2
+        dest: /etc/nginx/sites-available/oscaraguilardev
+
+    - name: Enable new site
+      file:
+        src: /etc/nginx/sites-available/oscaraguilardev
+        dest: /etc/nginx/sites-enabled/oscaraguilardev
+        state: link
+
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
