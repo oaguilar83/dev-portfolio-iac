@@ -1,8 +1,7 @@
 # dev-portfolio-iac
 
 ### Todo
-- Update Ansible with roles
-- Removed hardcoded inputs
+- Automate everything with Python
 
 ### In Progres...
 
