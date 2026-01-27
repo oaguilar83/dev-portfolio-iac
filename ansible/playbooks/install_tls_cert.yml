@@ -21,12 +21,6 @@
         src: ../files/nginx.conf.tls.j2
         dest: /etc/nginx/sites-available/oscaraguilardev
 
-    - name: Enable new site
-      file:
-        src: /etc/nginx/sites-available/oscaraguilardev
-        dest: /etc/nginx/sites-enabled/oscaraguilardev
-        state: link
-
     - name: Restart Nginx
       service:
         name: nginx
