@@ -1,6 +1,6 @@
 # dev-portfolio-iac
 
-### Todo
+### To Do
 - Automate everything with Python
 
 ### In Progres...
