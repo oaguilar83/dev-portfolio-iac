@@ -117,7 +117,7 @@ ansible-playbook -i inventory playbooks/install_tls_cert.yml
 ## What Gets Deployed
 
 1. **EC2 Instance**: Ubuntu 24.04 LTS (t2.micro)
-2. **Security Group**: SSH (restricted to deployer IP), HTTP, and HTTPS access
+2. **Security Group**: SSH (open for CI/CD automation), HTTP, and HTTPS access
 3. **SSH Key Pair**: Auto-generated RSA 4096-bit key pair
 4. **Route53 Zone**: DNS management for domain
 5. **DNS Records**: A record for root domain, alias for www
